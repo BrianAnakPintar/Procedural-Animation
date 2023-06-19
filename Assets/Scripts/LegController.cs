@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using Vector3 = UnityEngine.Vector3;
 
 public class LegController : MonoBehaviour
 {
@@ -45,10 +40,10 @@ public class LegController : MonoBehaviour
         foreach (GameObject caster in castersToLegs.Keys)
         {
             Ray ray = new Ray(caster.transform.position, Vector3.down);
-            // If we hit something
+            // If we hit something from the raycast
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                // First we check if the leg is outside our max-distance range
+                // First we check if the leg is outside our max-distance range (In a sense it works like a sphere)
                 if (Vector3.Distance(castersToLegs[caster].transform.position, hitInfo.point) > maxDistance)
                 {
                     if (!legsWaitlist.Contains(castersToLegs[caster]))
@@ -60,7 +55,7 @@ public class LegController : MonoBehaviour
             }
         }
 
-        // If we have something on the queue
+        // If we have something on the queue and we're not moving then we want to move the first item in the queu
         if (legsWaitlist.Count >= 1 && !currentlyMoving)
         {
             currentlyMoving = true;
@@ -82,17 +77,11 @@ public class LegController : MonoBehaviour
             lerp += speed * Time.deltaTime;
         }
 
+        // This indicates that we're done moving
         if (lerp >= 1)
         {
             currentlyMoving = false;
             initialLegPos = currentLeg.transform.position;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Queue length: " + legsWaitlist.Count);
-            Debug.Log("Current leg: " + currentLeg.name);
-            Debug.Log("Vel:" + playerController.getMovementVector());
         }
     }
 }
